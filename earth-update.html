@@ -1,0 +1,2380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earth Update v2026 – Patch Notes del Mundo Real</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================
+       CSS VARIABLES & RESET
+    ============================ */
+    :root {
+      --green:       #5C913B;
+      --green-light: #7DC44E;
+      --green-dark:  #3A6B22;
+      --brown:       #8B5A2B;
+      --brown-light: #A67C52;
+      --stone:       #3C3C3C;
+      --stone-light: #5A5A5A;
+      --black:       #121212;
+      --white:       #F0F0E8;
+      --cream:       #D4C89A;
+      --gold:        #F0C040;
+      --red:         #C03030;
+      --yellow:      #E8C530;
+      --blue:        #3A78C8;
+      --cyan:        #4ABFD8;
+      --dirt:        #7A5C3A;
+
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-mono:  'VT323', monospace;
+
+      --shadow-pixel: 4px 4px 0px rgba(0,0,0,0.6);
+      --shadow-card:  6px 6px 0px rgba(0,0,0,0.5);
+      --transition:   all 0.15s steps(2, end);
+      --radius:       0px;
+    }
+
+    /* Dark mode */
+    [data-theme="dark"] {
+      --bg-main:    #0A0A0A;
+      --bg-card:    #1A1A1A;
+      --bg-nav:     #0E1A0E;
+      --text-main:  #F0F0E8;
+      --text-dim:   #A0A090;
+      --border-col: #2A3A2A;
+    }
+    [data-theme="light"] {
+      --bg-main:    #1C2B1C;
+      --bg-card:    #243224;
+      --bg-nav:     #162616;
+      --text-main:  #F0F0E8;
+      --text-dim:   #B0B8A0;
+      --border-col: #3A4A3A;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      line-height: 1.8;
+      overflow-x: hidden;
+      /* Subtle block texture */
+      background-image:
+        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    /* ============================
+       SCROLLBAR
+    ============================ */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); border-left: 2px solid var(--green-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--green); border: 2px solid var(--green-dark); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--green-light); }
+
+    /* ============================
+       UTILITY
+    ============================ */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 60px 0; }
+    .section-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(10px, 2vw, 14px);
+      color: var(--green-light);
+      text-shadow: 2px 2px 0 var(--green-dark), var(--shadow-pixel);
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 12px; height: 12px;
+      background: var(--green);
+      box-shadow: var(--shadow-pixel);
+      flex-shrink: 0;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green-dark), transparent);
+    }
+    .pixel-border {
+      border: 3px solid var(--green-dark);
+      box-shadow: var(--shadow-card), inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .tag {
+      display: inline-block;
+      font-family: var(--font-pixel);
+      font-size: 7px;
+      padding: 4px 8px;
+      background: var(--green-dark);
+      color: var(--green-light);
+      text-transform: uppercase;
+      border: 2px solid var(--green);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    }
+    .tag.red    { background: #3a1010; color: #F08080; border-color: var(--red); }
+    .tag.yellow { background: #3a3010; color: #F0D080; border-color: var(--yellow); }
+    .tag.blue   { background: #10183a; color: #80B0F0; border-color: var(--blue); }
+    .tag.gold   { background: #3a2a00; color: var(--gold); border-color: var(--gold); }
+
+    /* ============================
+       NAVBAR
+    ============================ */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: var(--bg-nav);
+      border-bottom: 3px solid var(--green-dark);
+      box-shadow: 0 4px 0 rgba(0,0,0,0.5);
+      transition: all 0.3s ease;
+    }
+    #navbar.scrolled {
+      background: rgba(10, 26, 10, 0.97);
+      border-bottom-color: var(--green);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      padding: 0 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .nav-logo {
+      font-family: var(--font-pixel);
+      font-size: clamp(8px, 1.5vw, 11px);
+      color: var(--green-light);
+      text-shadow: 2px 2px 0 var(--green-dark);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 1px;
+    }
+    .nav-logo .logo-icon {
+      width: 24px; height: 24px;
+      background: var(--green);
+      border: 2px solid var(--green-dark);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-pixel);
+      font-size: 7px;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 6px 10px;
+      border: 2px solid transparent;
+      transition: var(--transition);
+      position: relative;
+    }
+    .nav-links a:hover {
+      color: var(--green-light);
+      border-color: var(--green-dark);
+      background: rgba(92, 145, 59, 0.1);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+    }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .version-badge {
+      font-family: var(--font-pixel);
+      font-size: 7px;
+      color: var(--gold);
+      border: 2px solid var(--gold);
+      padding: 4px 8px;
+      background: rgba(240,192,64,0.08);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+    }
+    #dark-toggle {
+      background: var(--stone);
+      border: 2px solid var(--stone-light);
+      color: var(--text-main);
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      padding: 6px 8px;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+      transition: var(--transition);
+    }
+    #dark-toggle:hover { background: var(--stone-light); box-shadow: 3px 3px 0 rgba(0,0,0,0.5); }
+
+    /* Hamburger */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      padding: 8px;
+      border: 2px solid var(--stone);
+    }
+    .nav-hamburger span {
+      display: block; width: 18px; height: 2px;
+      background: var(--text-main); transition: all 0.2s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg-nav); border-bottom: 3px solid var(--green-dark); flex-direction: column; padding: 12px; gap: 0; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 10px; border-bottom: 1px solid var(--border-col); }
+      .nav-hamburger { display: flex; }
+      .version-badge { display: none; }
+    }
+
+    /* ============================
+       HERO
+    ============================ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 80px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(92,145,59,0.08) 0%, transparent 70%),
+        var(--bg-main);
+    }
+
+    /* Animated pixel bg blocks */
+    .hero-bg-blocks {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-block {
+      position: absolute;
+      width: 16px; height: 16px;
+      background: rgba(92,145,59,0.08);
+      border: 1px solid rgba(92,145,59,0.12);
+      animation: floatBlock linear infinite;
+    }
+
+    @keyframes floatBlock {
+      from { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.5; }
+      to   { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    .hero-content { position: relative; z-index: 2; }
+    .hero-eyebrow {
+      font-size: 8px;
+      color: var(--green);
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease 0.2s forwards;
+    }
+    .hero-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(18px, 5vw, 40px);
+      line-height: 1.4;
+      color: var(--white);
+      text-shadow: 4px 4px 0 var(--green-dark), 8px 8px 0 rgba(0,0,0,0.3);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease 0.4s forwards;
+    }
+    .hero-title .earth-icon { display: inline-block; animation: spinEarth 4s steps(8) infinite; }
+    .hero-subtitle {
+      font-family: var(--font-mono);
+      font-size: clamp(14px, 2vw, 20px);
+      color: var(--text-dim);
+      max-width: 600px;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease 0.6s forwards;
+      border-left: 3px solid var(--green-dark);
+      padding-left: 16px;
+    }
+
+    @keyframes spinEarth {
+      0%   { content: '🌍'; }
+      33%  { content: '🌎'; }
+      66%  { content: '🌏'; }
+      100% { content: '🌍'; }
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease 0.8s forwards;
+    }
+    .btn-primary {
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      padding: 14px 24px;
+      background: var(--green);
+      color: var(--black);
+      border: 3px solid var(--green-dark);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 4px 4px 0 var(--green-dark), 6px 6px 0 rgba(0,0,0,0.4);
+      transition: var(--transition);
+      position: relative;
+      top: 0;
+    }
+    .btn-primary:hover {
+      background: var(--green-light);
+      top: -2px;
+      box-shadow: 6px 6px 0 var(--green-dark), 8px 8px 0 rgba(0,0,0,0.4);
+    }
+    .btn-primary:active { top: 2px; box-shadow: 2px 2px 0 var(--green-dark); }
+    .btn-secondary {
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      padding: 14px 24px;
+      background: transparent;
+      color: var(--text-dim);
+      border: 3px solid var(--stone-light);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+      transition: var(--transition);
+    }
+    .btn-secondary:hover { color: var(--text-main); border-color: var(--text-dim); }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 2px solid var(--border-col);
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease 1s forwards;
+    }
+    .hero-stat-item { display: flex; flex-direction: column; gap: 4px; }
+    .stat-number {
+      font-family: var(--font-pixel);
+      font-size: clamp(14px, 3vw, 22px);
+      color: var(--green-light);
+      text-shadow: 2px 2px 0 var(--green-dark);
+    }
+    .stat-label { font-size: 7px; color: var(--text-dim); }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================
+       WORLD HIGHLIGHTS
+    ============================ */
+    #highlights { background: var(--bg-card); border-top: 3px solid var(--green-dark); border-bottom: 3px solid var(--green-dark); }
+
+    .highlights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .highlight-card {
+      background: var(--bg-main);
+      border: 3px solid var(--border-col);
+      padding: 24px;
+      position: relative;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.1s steps(2), box-shadow 0.1s steps(2);
+      overflow: hidden;
+    }
+    .highlight-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+    .highlight-card.alert::before { background: var(--red); }
+    .highlight-card.warn::before  { background: var(--yellow); }
+    .highlight-card.info::before  { background: var(--blue); }
+    .highlight-card.ok::before    { background: var(--green); }
+
+    .highlight-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
+      border-color: var(--green-dark);
+    }
+    .hc-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+    .hc-value {
+      font-family: var(--font-pixel);
+      font-size: clamp(16px, 3vw, 24px);
+      color: var(--white);
+      margin-bottom: 8px;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    }
+    .hc-label {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+    .hc-desc { font-size: 7px; color: var(--text-dim); line-height: 2; }
+    .hc-corner {
+      position: absolute;
+      top: 12px; right: 12px;
+      font-size: 7px;
+    }
+
+    /* ============================
+       CLIMA
+    ============================ */
+    #clima { }
+    .clima-panel {
+      background: var(--bg-card);
+      border: 3px solid var(--border-col);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .clima-header {
+      background: var(--green-dark);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 3px solid var(--green);
+    }
+    .clima-header h3 { font-size: 9px; color: var(--white); }
+    .clima-dots { display: flex; gap: 6px; margin-left: auto; }
+    .clima-dot { width: 10px; height: 10px; border: 2px solid rgba(255,255,255,0.3); }
+    .clima-dot.green  { background: var(--green); border-color: var(--green-dark); }
+    .clima-dot.yellow { background: var(--yellow); border-color: #b09020; }
+    .clima-dot.red    { background: var(--red); border-color: #801010; }
+
+    .clima-body { padding: 24px; }
+    .clima-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .clima-stat {
+      border: 2px solid var(--border-col);
+      padding: 16px;
+      position: relative;
+      background: var(--bg-main);
+    }
+    .clima-stat-label { font-size: 6px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
+    .clima-stat-value {
+      font-family: var(--font-pixel);
+      font-size: clamp(12px, 2vw, 18px);
+      color: var(--white);
+    }
+    .clima-stat-value.hot   { color: #F08050; text-shadow: 2px 2px 0 #603020; }
+    .clima-stat-value.cold  { color: var(--cyan); text-shadow: 2px 2px 0 #1A3A4A; }
+    .clima-stat-value.warn  { color: var(--yellow); text-shadow: 2px 2px 0 #4A3800; }
+    .clima-stat-change { font-size: 7px; margin-top: 6px; }
+    .clima-stat-change.up   { color: var(--red); }
+    .clima-stat-change.down { color: var(--cyan); }
+
+    .clima-bar-label { font-size: 7px; color: var(--text-dim); margin-bottom: 6px; }
+    .clima-bar-wrap { background: var(--stone); height: 12px; border: 2px solid var(--stone-light); margin-bottom: 12px; position: relative; overflow: hidden; }
+    .clima-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-dark), var(--green-light));
+      transition: width 1.5s ease;
+      width: 0;
+    }
+    .clima-bar-fill.red-bar  { background: linear-gradient(90deg, #801010, var(--red)); }
+    .clima-bar-fill.blue-bar { background: linear-gradient(90deg, #102040, var(--blue)); }
+    .clima-bar-val { position: absolute; right: 6px; top: 0; bottom: 0; display: flex; align-items: center; font-size: 6px; color: var(--white); }
+
+    /* ============================
+       POLÍTICA
+    ============================ */
+    #politica { background: var(--bg-card); border-top: 3px solid var(--border-col); border-bottom: 3px solid var(--border-col); }
+    .console-wrap {
+      background: #080808;
+      border: 3px solid var(--stone-light);
+      box-shadow: var(--shadow-card), inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    .console-top {
+      background: var(--stone);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 3px solid var(--stone-light);
+    }
+    .console-top span { font-size: 8px; color: var(--text-dim); }
+    .console-top .blink { animation: blink 1s steps(1) infinite; color: var(--green-light); }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .console-body { padding: 20px; max-height: 400px; overflow-y: auto; font-family: var(--font-mono); }
+    .console-line {
+      font-size: 16px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: all 0.3s ease;
+    }
+    .console-line.visible { opacity: 1; transform: translateX(0); }
+    .cl-time { color: var(--stone-light); flex-shrink: 0; font-size: 13px; }
+    .cl-tag {
+      flex-shrink: 0;
+      font-size: 12px;
+      padding: 2px 6px;
+      border: 1px solid;
+    }
+    .cl-tag.warn   { color: var(--yellow); border-color: var(--yellow); background: rgba(240,197,48,0.08); }
+    .cl-tag.error  { color: var(--red); border-color: var(--red); background: rgba(192,48,48,0.08); }
+    .cl-tag.ok     { color: var(--green-light); border-color: var(--green); background: rgba(92,145,59,0.08); }
+    .cl-tag.info   { color: var(--cyan); border-color: var(--cyan); background: rgba(74,191,216,0.08); }
+    .cl-text { color: var(--text-dim); flex: 1; }
+    .cl-text strong { color: var(--text-main); font-weight: normal; }
+
+    /* ============================
+       MÚSICA
+    ============================ */
+    #musica { }
+    .music-list { display: flex; flex-direction: column; gap: 8px; }
+    .music-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 2px solid var(--border-col);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: transform 0.1s steps(2), border-color 0.1s, box-shadow 0.1s steps(2);
+      position: relative;
+      overflow: hidden;
+    }
+    .music-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: rgba(92,145,59,0.08);
+      transition: width 0.2s ease;
+    }
+    .music-item:hover::before { width: 100%; }
+    .music-item:hover {
+      border-color: var(--green-dark);
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 rgba(0,0,0,0.5);
+    }
+    .music-rank {
+      font-family: var(--font-pixel);
+      font-size: clamp(10px, 2vw, 14px);
+      color: var(--stone-light);
+      width: 32px;
+      flex-shrink: 0;
+    }
+    .music-rank.top { color: var(--gold); text-shadow: 1px 1px 0 #804000; }
+    .music-art {
+      width: 44px; height: 44px;
+      border: 2px solid var(--border-col);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      background: var(--stone);
+    }
+    .music-info { flex: 1; }
+    .music-title { font-family: var(--font-pixel); font-size: 8px; color: var(--white); margin-bottom: 4px; }
+    .music-artist { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
+    .music-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .music-streams { font-size: 7px; color: var(--text-dim); }
+    .music-trend { font-size: 10px; }
+    .music-trend.up   { color: var(--green-light); }
+    .music-trend.down { color: var(--red); }
+    .music-trend.new  { color: var(--gold); font-size: 7px; }
+    .music-bar {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--green-dark), var(--green-light));
+      transition: width 0.4s ease;
+      width: 0;
+    }
+    .music-item:hover .music-bar { width: 100%; }
+
+    /* ============================
+       TENDENCIAS
+    ============================ */
+    #tendencias { background: var(--bg-card); border-top: 3px solid var(--border-col); border-bottom: 3px solid var(--border-col); }
+    .trends-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .trend-card {
+      background: var(--bg-main);
+      border: 2px solid var(--border-col);
+      padding: 20px;
+      position: relative;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+      transition: transform 0.1s steps(2), box-shadow 0.1s steps(2);
+      overflow: hidden;
+    }
+    .trend-card:hover {
+      transform: translate(-2px,-2px);
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
+      border-color: var(--green-dark);
+    }
+    .trend-pct {
+      font-family: var(--font-pixel);
+      font-size: clamp(16px, 3vw, 22px);
+      margin-bottom: 8px;
+    }
+    .trend-pct.green  { color: var(--green-light); text-shadow: 2px 2px 0 var(--green-dark); }
+    .trend-pct.red    { color: #F08080; text-shadow: 2px 2px 0 #600000; }
+    .trend-pct.yellow { color: var(--gold); text-shadow: 2px 2px 0 #604000; }
+    .trend-pct.cyan   { color: var(--cyan); text-shadow: 2px 2px 0 #102030; }
+    .trend-name { font-size: 7px; color: var(--text-dim); margin-bottom: 6px; line-height: 2; }
+    .trend-category { font-size: 6px; color: var(--stone-light); text-transform: uppercase; letter-spacing: 2px; }
+    .trend-icon { position: absolute; top: 16px; right: 16px; font-size: 22px; opacity: 0.4; }
+    .trend-spark {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--green-dark);
+    }
+    .trend-spark-fill {
+      height: 100%;
+      background: var(--green);
+      width: 0;
+      transition: width 1.5s ease;
+    }
+
+    /* ============================
+       ECOSISTEMA
+    ============================ */
+    #ecosistema { }
+    .eco-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .eco-card {
+      border: 3px solid var(--border-col);
+      background: var(--bg-card);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+    .eco-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 3px solid;
+    }
+    .eco-header.red-h    { background: rgba(192,48,48,0.15); border-color: var(--red); }
+    .eco-header.yellow-h { background: rgba(240,197,48,0.1); border-color: var(--yellow); }
+    .eco-header.green-h  { background: rgba(92,145,59,0.15); border-color: var(--green); }
+    .eco-icon { font-size: 20px; }
+    .eco-title { font-size: 8px; }
+    .eco-status {
+      margin-left: auto;
+      font-size: 7px;
+      padding: 3px 8px;
+      border: 2px solid;
+    }
+    .eco-status.critical { color: var(--red); border-color: var(--red); background: rgba(192,48,48,0.12); }
+    .eco-status.warning  { color: var(--yellow); border-color: var(--yellow); background: rgba(240,197,48,0.1); }
+    .eco-status.stable   { color: var(--green-light); border-color: var(--green); background: rgba(92,145,59,0.1); }
+
+    .eco-body { padding: 18px; }
+    .eco-metric { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .eco-metric:last-child { border-bottom: none; }
+    .eco-metric-label { font-family: var(--font-mono); font-size: 14px; color: var(--text-dim); }
+    .eco-metric-val { font-family: var(--font-pixel); font-size: 9px; }
+    .eco-metric-val.bad  { color: var(--red); }
+    .eco-metric-val.warn { color: var(--yellow); }
+    .eco-metric-val.good { color: var(--green-light); }
+
+    .eco-progress { margin-top: 14px; }
+    .eco-prog-label { display: flex; justify-content: space-between; font-size: 6px; color: var(--stone-light); margin-bottom: 4px; }
+    .eco-prog-bar { background: var(--stone); height: 10px; border: 2px solid var(--stone-light); overflow: hidden; }
+    .eco-prog-fill { height: 100%; width: 0; transition: width 1.5s ease; }
+    .eco-prog-fill.red-fill    { background: var(--red); }
+    .eco-prog-fill.yellow-fill { background: var(--yellow); }
+    .eco-prog-fill.green-fill  { background: var(--green); }
+
+    /* ============================
+       BETA UPDATE
+    ============================ */
+    #beta {
+      background:
+        repeating-linear-gradient(
+          45deg,
+          rgba(92,145,59,0.03) 0px,
+          rgba(92,145,59,0.03) 2px,
+          transparent 2px,
+          transparent 12px
+        ),
+        var(--bg-card);
+      border-top: 3px solid var(--green);
+      border-bottom: 3px solid var(--green);
+    }
+    .beta-inner {
+      border: 3px solid var(--green);
+      padding: 40px;
+      position: relative;
+      background: rgba(0,0,0,0.3);
+      box-shadow: var(--shadow-card), inset 0 0 60px rgba(92,145,59,0.05);
+    }
+    .beta-badge {
+      position: absolute;
+      top: -14px; left: 30px;
+      background: var(--green);
+      color: var(--black);
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 4px 12px;
+      box-shadow: 3px 3px 0 var(--green-dark);
+    }
+    .beta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    @media (max-width: 600px) { .beta-grid { grid-template-columns: 1fr; } }
+    .beta-item {
+      padding: 20px;
+      border: 2px solid var(--green-dark);
+      background: rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .beta-item:hover { border-color: var(--green); }
+    .beta-item::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(92,145,59,0.1), transparent);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { to { left: 150%; } }
+    .beta-item-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+    .beta-item-title { font-size: 8px; color: var(--green-light); margin-bottom: 8px; }
+    .beta-item-desc { font-family: var(--font-mono); font-size: 14px; color: var(--text-dim); }
+    .beta-item-tag {
+      margin-top: 12px;
+      display: inline-block;
+      font-size: 7px;
+      padding: 3px 8px;
+      border: 2px solid var(--green-dark);
+      color: var(--green);
+      background: rgba(92,145,59,0.08);
+    }
+    .beta-progress-section { margin-top: 32px; }
+    .beta-prog-title { font-size: 8px; color: var(--text-dim); margin-bottom: 16px; }
+    .bprog-row { margin-bottom: 14px; }
+    .bprog-label { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); margin-bottom: 5px; }
+    .bprog-bar { background: rgba(0,0,0,0.5); height: 16px; border: 2px solid var(--green-dark); overflow: hidden; position: relative; }
+    .bprog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-dark), var(--green), var(--green-light));
+      width: 0;
+      transition: width 2s ease;
+      position: relative;
+    }
+    .bprog-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 4px;
+      background: white;
+      opacity: 0.6;
+      animation: cursor-blink 0.8s steps(1) infinite;
+    }
+    @keyframes cursor-blink { 50% { opacity: 0; } }
+
+    /* ============================
+       FOOTER
+    ============================ */
+    footer {
+      background: #080808;
+      border-top: 3px solid var(--green-dark);
+      padding: 40px 0 20px;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+      padding-bottom: 30px;
+      border-bottom: 2px solid var(--border-col);
+      margin-bottom: 24px;
+    }
+    .footer-brand { }
+    .footer-logo {
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      color: var(--green-light);
+      text-shadow: 2px 2px 0 var(--green-dark);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .footer-tagline { font-family: var(--font-mono); font-size: 14px; color: var(--text-dim); }
+    .footer-links-group { }
+    .footer-links-title { font-size: 7px; color: var(--green); margin-bottom: 12px; letter-spacing: 2px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .footer-links a {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--green-light); }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-copy { font-size: 7px; color: var(--stone-light); }
+    .footer-version { font-size: 7px; color: var(--green-dark); }
+    .footer-heart { color: var(--red); animation: heartbeat 1s steps(2) infinite; display: inline-block; }
+    @keyframes heartbeat { 50% { transform: scale(1.2); } }
+
+    /* ============================
+       SCROLL ANIMATIONS
+    ============================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================
+       TOAST NOTIFICATION
+    ============================ */
+    #toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: var(--bg-card);
+      border: 3px solid var(--green);
+      box-shadow: var(--shadow-card);
+      padding: 14px 18px;
+      font-size: 7px;
+      color: var(--text-main);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s steps(3);
+      max-width: 260px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast .toast-title { color: var(--green-light); margin-bottom: 4px; }
+    #toast .toast-body { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
+
+    /* ============================
+       CURSOR PIXEL
+    ============================ */
+    @media (pointer: fine) {
+      body { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect x='0' y='0' width='4' height='4' fill='%235C913B'/%3E%3Crect x='4' y='4' width='4' height='4' fill='%235C913B'/%3E%3Crect x='4' y='0' width='4' height='4' fill='%233A6B22'/%3E%3C/svg%3E") 0 0, crosshair; }
+    }
+
+    /* ============================
+       MISC / SPACING
+    ============================ */
+    @media (max-width: 480px) {
+      .hero-stats { gap: 20px; }
+      .beta-inner { padding: 24px 16px; }
+    }
+
+    /* ============================
+       UPDATE SELECTOR
+    ============================ */
+    #update-selector {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 80px;
+      padding-bottom: 60px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 40%, rgba(92,145,59,0.07) 0%, transparent 70%),
+        var(--bg-main);
+    }
+    #update-selector.hidden { display: none; }
+
+    /* Selector hero text */
+    .selector-eyebrow {
+      font-size: 8px;
+      color: var(--green);
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 0.1s forwards;
+    }
+    .selector-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(14px, 4vw, 28px);
+      color: var(--white);
+      text-shadow: 4px 4px 0 var(--green-dark), 8px 8px 0 rgba(0,0,0,0.3);
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 0.25s forwards;
+    }
+    .selector-subtitle {
+      font-family: var(--font-mono);
+      font-size: clamp(14px, 2vw, 18px);
+      color: var(--text-dim);
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 0.4s forwards;
+      border-left: 3px solid var(--green-dark);
+      padding-left: 16px;
+      max-width: 500px;
+    }
+
+    /* Update cards grid */
+    .update-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      opacity: 0;
+      animation: fadeSlideUp 0.5s ease 0.55s forwards;
+    }
+    .update-card {
+      background: var(--bg-card);
+      border: 3px solid var(--border-col);
+      padding: 28px;
+      cursor: pointer;
+      position: relative;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.1s steps(2), box-shadow 0.1s steps(2), border-color 0.1s;
+      overflow: hidden;
+    }
+    .update-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+    .update-card.green-accent::before  { background: var(--green); }
+    .update-card.red-accent::before    { background: var(--red); }
+    .update-card.gold-accent::before   { background: var(--gold); }
+    .update-card.cyan-accent::before   { background: var(--cyan); }
+
+    .update-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 9px 9px 0 rgba(0,0,0,0.55);
+      border-color: var(--green-dark);
+    }
+    .update-card:hover .uc-arrow { transform: translateX(4px); }
+    /* Pixel scanline shimmer on hover */
+    .update-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(255,255,255,0.015) 3px,
+        rgba(255,255,255,0.015) 4px
+      );
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .update-card:hover::after { opacity: 1; }
+
+    .uc-version {
+      font-family: var(--font-pixel);
+      font-size: 7px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+    }
+    .uc-icon { font-size: 36px; margin-bottom: 14px; display: block; }
+    .uc-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(9px, 2vw, 12px);
+      color: var(--white);
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+    .uc-desc {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .uc-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 2px solid var(--border-col);
+    }
+    .uc-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .uc-arrow {
+      font-size: 14px;
+      color: var(--green-light);
+      transition: transform 0.15s steps(2);
+    }
+    .uc-stat-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .uc-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .uc-stat-num {
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      color: var(--green-light);
+    }
+    .uc-stat-lbl { font-size: 6px; color: var(--stone-light); letter-spacing: 1px; }
+
+    /* ============================
+       UPDATE CONTENT WRAPPER
+    ============================ */
+    .update-content { display: none; }
+    .update-content.active { display: block; }
+
+    /* Fade in when activated */
+    .update-content.fade-in {
+      animation: updateFadeIn 0.3s ease forwards;
+    }
+    @keyframes updateFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Back button bar */
+    .back-bar {
+      padding: 16px 0 0;
+      margin-top: 56px; /* navbar offset */
+    }
+    .btn-back {
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 12px 18px;
+      background: var(--stone);
+      color: var(--text-dim);
+      border: 3px solid var(--stone-light);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+      transition: var(--transition);
+      position: relative;
+      top: 0;
+    }
+    .btn-back:hover {
+      background: var(--stone-light);
+      color: var(--text-main);
+      top: -1px;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+    }
+    .btn-back:active { top: 1px; box-shadow: 1px 1px 0 rgba(0,0,0,0.4); }
+
+    /* Update header banner inside each update */
+    .update-banner {
+      padding: 20px 0 0;
+      margin-bottom: -20px;
+    }
+    .update-banner-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 3px solid var(--border-col);
+      border-bottom: none;
+      box-shadow: 0 -3px 0 rgba(0,0,0,0.3);
+    }
+    .update-banner-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(9px, 2vw, 13px);
+      color: var(--green-light);
+      text-shadow: 2px 2px 0 var(--green-dark);
+    }
+    .update-banner-meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+<!-- ============================
+     TOAST NOTIFICATION
+============================= -->
+<div id="toast">
+  <div class="toast-title">🔔 PATCH NOTES</div>
+  <div class="toast-body">Earth Update v2026 cargado correctamente.</div>
+</div>
+
+<!-- ============================
+     NAVBAR
+============================= -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">
+      <div class="logo-icon">🌍</div>
+      EARTH UPDATE
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#hero">HOME</a></li>
+      <li><a href="#clima">CLIMA</a></li>
+      <li><a href="#musica">MÚSICA</a></li>
+      <li><a href="#tendencias">TENDENCIAS</a></li>
+      <li><a href="#ecosistema">ECOSISTEMA</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="version-badge">v2026.04</span>
+      <button id="dark-toggle" title="Toggle tema">🌙</button>
+      <div class="nav-hamburger" id="hamburger" role="button" tabindex="0" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================
+     UPDATE SELECTOR
+============================= -->
+<div id="update-selector">
+  <div class="hero-bg-blocks" id="selector-bg"></div>
+  <div class="container" style="position:relative;z-index:2">
+    <p class="selector-eyebrow">// SELECCIONA UNA ACTUALIZACIÓN PARA LEER</p>
+    <h1 class="selector-title">🌍 EARTH UPDATE<br>PATCH NOTES</h1>
+    <p class="selector-subtitle">
+      Elige una versión para ver sus patch notes completos.<br>
+      Cada update contiene datos, registros y alertas del mundo real.
+    </p>
+    <div class="update-cards-grid">
+      <div class="update-card green-accent" onclick="openUpdate('update-main')">
+        <div class="uc-version">// VERSIÓN ACTUAL</div>
+        <span class="uc-icon">🌍</span>
+        <div class="uc-stat-row">
+          <div class="uc-stat"><span class="uc-stat-num">412</span><span class="uc-stat-lbl">CAMBIOS</span></div>
+          <div class="uc-stat"><span class="uc-stat-num">+1.97°C</span><span class="uc-stat-lbl">TEMP. GLOBAL</span></div>
+          <div class="uc-stat"><span class="uc-stat-num">8.2B</span><span class="uc-stat-lbl">JUGADORES</span></div>
+        </div>
+        <div class="uc-title">EARTH UPDATE v2026.04</div>
+        <div class="uc-desc">Update principal del año. Tensiones geopolíticas, IA generativa masiva, ranking mundial de música y alertas críticas del bioma. 2026 recargado.</div>
+        <div class="uc-meta">
+          <div class="uc-tags"><span class="tag">ESTABLE</span><span class="tag gold">DESTACADO</span></div>
+          <span class="uc-arrow">▶</span>
+        </div>
+      </div>
+      <div class="update-card red-accent" onclick="openUpdate('update-heat')">
+        <div class="uc-version">// HOTFIX CLIMÁTICO</div>
+        <span class="uc-icon">🔥</span>
+        <div class="uc-stat-row">
+          <div class="uc-stat"><span class="uc-stat-num">+3.7°C</span><span class="uc-stat-lbl">PICO CALOR</span></div>
+          <div class="uc-stat"><span class="uc-stat-num">127</span><span class="uc-stat-lbl">ALERTAS</span></div>
+          <div class="uc-stat"><span class="uc-stat-num">×5.8</span><span class="uc-stat-lbl">INCENDIOS</span></div>
+        </div>
+        <div class="uc-title">HEAT UPDATE v2 — COLAPSO TÉRMICO</div>
+        <div class="uc-desc">Parche de emergencia crítica. 2025 confirmado el año más caliente registrado. Biomas en colapso acelerado. Protocolo de supervivencia activado.</div>
+        <div class="uc-meta">
+          <div class="uc-tags"><span class="tag red">CRÍTICO</span><span class="tag yellow">HOTFIX</span></div>
+          <span class="uc-arrow">▶</span>
+        </div>
+      </div>
+      <div class="update-card cyan-accent" onclick="openUpdate('update-tech')">
+        <div class="uc-version">// EXPANSIÓN TECNOLÓGICA</div>
+        <span class="uc-icon">🤖</span>
+        <div class="uc-stat-row">
+          <div class="uc-stat"><span class="uc-stat-num">AGI</span><span class="uc-stat-lbl">EN DEBATE</span></div>
+          <div class="uc-stat"><span class="uc-stat-num">18</span><span class="uc-stat-lbl">NUEVOS MODS</span></div>
+          <div class="uc-stat"><span class="uc-stat-num">4.8B</span><span class="uc-stat-lbl">USUARIOS IA</span></div>
+        </div>
+        <div class="uc-title">TECH UPDATE v2 — IA AGÉNTICA</div>
+        <div class="uc-desc">Agentes de IA autónomos operan sin supervisión humana. Robótica humanoide en producción. Computación cuántica comercial. El meta cambió para siempre.</div>
+        <div class="uc-meta">
+          <div class="uc-tags"><span class="tag blue">EXPANSIÓN</span><span class="tag gold">NUEVO</span></div>
+          <span class="uc-arrow">▶</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================
+     UPDATE: MAIN (v2026.04)
+============================= -->
+<div class="update-content" id="update-main">
+  <div class="container">
+    <div class="back-bar">
+      <button class="btn-back" onclick="closeUpdate()">◀ VOLVER AL SELECTOR</button>
+    </div>
+    <div class="update-banner">
+      <div class="update-banner-inner">
+        <span class="update-banner-title">🌍 EARTH UPDATE v2026.04 — PATCH NOTES COMPLETOS</span>
+        <div class="update-banner-meta">
+          <span class="tag">ESTABLE</span>
+          <span class="tag gold">v2026.04</span>
+          <span class="version-badge">412 CAMBIOS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- ============================
+     HERO
+============================= -->
+<section id="hero" class="section">
+  <div class="hero-bg-blocks" id="hero-bg"></div>
+  <div class="container hero-content">
+    <p class="hero-eyebrow">// PATCH NOTES CARGADOS — BUILD 2026.04 EN REVISIÓN</p>
+    <h1 class="hero-title">
+      <span class="earth-icon">🌍</span>
+      EARTH UPDATE<br>v2026
+    </h1>
+    <p class="hero-subtitle">
+      Se detectaron 412 cambios en el mundo real.<br>
+      Nuevas mecánicas geopolíticas activadas. Biomas bajo presión máxima.<br>
+      La IA agéntica ya opera sin supervisión en múltiples servidores.
+    </p>
+    <div class="hero-actions">
+      <a href="#highlights" class="btn-primary">▶ VER ACTUALIZACIÓN</a>
+      <a href="#ecosistema" class="btn-secondary">⚠ ALERTAS CRÍTICAS</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat-item">
+        <span class="stat-number">+1.97°C</span>
+        <span class="stat-label">Temperatura global</span>
+      </div>
+      <div class="hero-stat-item">
+        <span class="stat-number">8.2B</span>
+        <span class="stat-label">Jugadores activos</span>
+      </div>
+      <div class="hero-stat-item">
+        <span class="stat-number">412</span>
+        <span class="stat-label">Cambios detectados</span>
+      </div>
+      <div class="hero-stat-item">
+        <span class="stat-number">v2026</span>
+        <span class="stat-label">Versión actual</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     WORLD HIGHLIGHTS
+============================= -->
+<section id="highlights" class="section">
+  <div class="container">
+    <h2 class="section-title">🧱 WORLD HIGHLIGHTS — CAMBIOS MAYORES</h2>
+    <div class="highlights-grid">
+
+      <div class="highlight-card alert reveal">
+        <span class="hc-icon">🌡️</span>
+        <div class="hc-value">+1.97°C</div>
+        <div class="hc-label">2025: año más caliente jamás registrado</div>
+        <div class="hc-desc">El servidor rompió el récord de temperatura por segundo año consecutivo. El umbral de +2°C del Acuerdo de París está a punto de ser superado de forma permanente. Bioma ártico en colapso acelerado.</div>
+        <div class="hc-corner"><span class="tag red">RÉCORD</span></div>
+      </div>
+
+      <div class="highlight-card warn reveal">
+        <span class="hc-icon">⚔️</span>
+        <div class="hc-value">3</div>
+        <div class="hc-label">Conflictos armados activos de alto impacto</div>
+        <div class="hc-desc">Ucrania, Gaza y Sudán del Sur siguen activos en el mapa. Nuevas tensiones en el Mar de China. La mecánica de comercio global sigue siendo inestable por las rutas de Medio Oriente.</div>
+        <div class="hc-corner"><span class="tag yellow">AVISO</span></div>
+      </div>
+
+      <div class="highlight-card ok reveal">
+        <span class="hc-icon">🤖</span>
+        <div class="hc-value">AGI</div>
+        <div class="hc-label">Umbral de inteligencia general en debate</div>
+        <div class="hc-desc">OpenAI, Google DeepMind y Anthropic reportan modelos que razonan de forma autónoma en dominios múltiples. El debate sobre si ya existe AGI está dividiendo a la comunidad científica global.</div>
+        <div class="hc-corner"><span class="tag gold">NUEVO</span></div>
+      </div>
+
+      <div class="highlight-card alert reveal">
+        <span class="hc-icon">💸</span>
+        <div class="hc-value">$315T</div>
+        <div class="hc-label">Deuda global total</div>
+        <div class="hc-desc">La deuda mundial supera por primera vez los $315 billones. Estados Unidos, China y la UE en modo de gestión de crisis fiscal. La mecánica de tasas de interés sigue siendo el boss final de la economía.</div>
+        <div class="hc-corner"><span class="tag red">ALERTA</span></div>
+      </div>
+
+      <div class="highlight-card info reveal">
+        <span class="hc-icon">🚀</span>
+        <div class="hc-value">Marte</div>
+        <div class="hc-label">Primera misión tripulada en preparación</div>
+        <div class="hc-desc">SpaceX tiene fecha tentativa para misión tripulada a Marte en 2026–2027. El bioma marciano está siendo mapeado. Artemia I ya probó el regreso desde órbita lunar con éxito total.</div>
+        <div class="hc-corner"><span class="tag blue">INFO</span></div>
+      </div>
+
+      <div class="highlight-card ok reveal">
+        <span class="hc-icon">⚡</span>
+        <div class="hc-value">40%</div>
+        <div class="hc-label">Electricidad global de fuentes renovables</div>
+        <div class="hc-desc">Hito histórico desbloqueado: por primera vez, el 40% de la electricidad mundial proviene de sol, viento e hidro. La transición energética superó proyecciones del IEA por 4 años.</div>
+        <div class="hc-corner"><span class="tag">BUFF</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     CLIMA
+============================= -->
+<section id="clima" class="section">
+  <div class="container">
+    <h2 class="section-title">🌡️ SISTEMA CLIMÁTICO — STATS DEL SERVIDOR</h2>
+    <div class="clima-panel reveal">
+      <div class="clima-header">
+        <h3>⚙ CLIMATE_ENGINE v2026 — PANEL DE CONTROL</h3>
+        <div class="clima-dots">
+          <div class="clima-dot red"></div>
+          <div class="clima-dot yellow"></div>
+          <div class="clima-dot green"></div>
+        </div>
+      </div>
+      <div class="clima-body">
+        <div class="clima-grid">
+          <div class="clima-stat">
+            <div class="clima-stat-label">TEMP. MEDIA GLOBAL</div>
+            <div class="clima-stat-value hot">+1.97°C</div>
+            <div class="clima-stat-change up">▲ Récord absoluto 2025</div>
+          </div>
+          <div class="clima-stat">
+            <div class="clima-stat-label">CO₂ ATMOSFÉRICO</div>
+            <div class="clima-stat-value warn">427 PPM</div>
+            <div class="clima-stat-change up">▲ +5 PPM vs 2024</div>
+          </div>
+          <div class="clima-stat">
+            <div class="clima-stat-label">HIELO ÁRTICO</div>
+            <div class="clima-stat-value cold">3.8M km²</div>
+            <div class="clima-stat-change down">▼ Mínimo histórico</div>
+          </div>
+          <div class="clima-stat">
+            <div class="clima-stat-label">NIVEL DEL MAR</div>
+            <div class="clima-stat-value hot">+26cm</div>
+            <div class="clima-stat-change up">▲ Desde 1900</div>
+          </div>
+          <div class="clima-stat">
+            <div class="clima-stat-label">METANO ATMOSFÉRICO</div>
+            <div class="clima-stat-value warn">1,934 ppb</div>
+            <div class="clima-stat-change up">▲ Máximo en 800K años</div>
+          </div>
+          <div class="clima-stat">
+            <div class="clima-stat-label">ENERGÍA RENOVABLE</div>
+            <div class="clima-stat-value" style="color:var(--green-light)">40%</div>
+            <div class="clima-stat-change down" style="color:var(--green-light)">▲ +6% vs 2024</div>
+          </div>
+        </div>
+        <div>
+          <div class="clima-bar-label">TEMPERATURA: Nivel de amenaza global</div>
+          <div class="clima-bar-wrap">
+            <div class="clima-bar-fill red-bar" data-width="82"></div>
+            <span class="clima-bar-val">82%</span>
+          </div>
+          <div class="clima-bar-label">BIODIVERSIDAD: Estado del inventario de especies</div>
+          <div class="clima-bar-wrap">
+            <div class="clima-bar-fill" data-width="49" style="background: linear-gradient(90deg, #805A00, var(--yellow))"></div>
+            <span class="clima-bar-val">49%</span>
+          </div>
+          <div class="clima-bar-label">ENERGÍA RENOVABLE: Progreso de transición</div>
+          <div class="clima-bar-wrap">
+            <div class="clima-bar-fill" data-width="40"></div>
+            <span class="clima-bar-val">40%</span>
+          </div>
+          <div class="clima-bar-label">CALIDAD DEL AIRE: Índice global promedio</div>
+          <div class="clima-bar-wrap">
+            <div class="clima-bar-fill blue-bar" data-width="38"></div>
+            <span class="clima-bar-val">38%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     POLÍTICA
+============================= -->
+<section id="politica" class="section">
+  <div class="container">
+    <h2 class="section-title">🏛️ LOG DE EVENTOS POLÍTICOS — REGISTRO GLOBAL</h2>
+    <div class="console-wrap reveal">
+      <div class="console-top">
+        <span>WORLD_EVENTS_2026.log</span>
+        <span class="blink">█</span>
+        <span style="margin-left:auto">412 entradas</span>
+      </div>
+      <div class="console-body" id="console-body">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     MÚSICA GLOBAL
+============================= -->
+<section id="musica" class="section">
+  <div class="container">
+    <h2 class="section-title">🌍 TOP MÚSICA GLOBAL — RANKING MUNDIAL</h2>
+    <div class="music-list reveal" id="music-list">
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     TENDENCIAS
+============================= -->
+<section id="tendencias" class="section">
+  <div class="container">
+    <h2 class="section-title">📈 TENDENCIAS — CAMBIOS DE STATS GLOBALES</h2>
+    <div class="trends-grid" id="trends-grid">
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     ECOSISTEMA
+============================= -->
+<section id="ecosistema" class="section">
+  <div class="container">
+    <h2 class="section-title">🌿 ECOSISTEMA — ALERTAS DEL BIOMA</h2>
+    <div class="eco-grid">
+
+      <div class="eco-card reveal">
+        <div class="eco-header red-h">
+          <span class="eco-icon">🌊</span>
+          <span class="eco-title">OCÉANOS</span>
+          <span class="eco-status critical">CRÍTICO</span>
+        </div>
+        <div class="eco-body">
+          <div class="eco-metric">
+            <span class="eco-metric-label">Temperatura superficial</span>
+            <span class="eco-metric-val bad">+1.3°C récord</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Acidificación</span>
+            <span class="eco-metric-val bad">pH 8.04 (↓)</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Zonas muertas</span>
+            <span class="eco-metric-val bad">700+ zonas</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Plásticos flotantes</span>
+            <span class="eco-metric-val bad">190M toneladas</span>
+          </div>
+          <div class="eco-progress">
+            <div class="eco-prog-label"><span>Salud oceánica global</span><span>24%</span></div>
+            <div class="eco-prog-bar">
+              <div class="eco-prog-fill red-fill" data-width="24"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="eco-card reveal">
+        <div class="eco-header yellow-h">
+          <span class="eco-icon">🌳</span>
+          <span class="eco-title">DEFORESTACIÓN</span>
+          <span class="eco-status warning">AVISO</span>
+        </div>
+        <div class="eco-body">
+          <div class="eco-metric">
+            <span class="eco-metric-label">Pérdida anual 2025</span>
+            <span class="eco-metric-val warn">5.1M ha</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Congo afectado</span>
+            <span class="eco-metric-val bad">+28% vs 2023</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Amazonia restante</span>
+            <span class="eco-metric-val warn">78.9%</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Reforestación activa</span>
+            <span class="eco-metric-val good">+2.1M ha/año</span>
+          </div>
+          <div class="eco-progress">
+            <div class="eco-prog-label"><span>Cobertura forestal</span><span>30%</span></div>
+            <div class="eco-prog-bar">
+              <div class="eco-prog-fill yellow-fill" data-width="30"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="eco-card reveal">
+        <div class="eco-header green-h">
+          <span class="eco-icon">☀️</span>
+          <span class="eco-title">ENERGÍA LIMPIA</span>
+          <span class="eco-status stable">PROGRESO</span>
+        </div>
+        <div class="eco-body">
+          <div class="eco-metric">
+            <span class="eco-metric-label">Solar instalada global</span>
+            <span class="eco-metric-val good">2,800 GW</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Eólica total</span>
+            <span class="eco-metric-val good">1,100 GW</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Vehículos eléctricos</span>
+            <span class="eco-metric-val good">28% ventas globales</span>
+          </div>
+          <div class="eco-metric">
+            <span class="eco-metric-label">Carbón en uso</span>
+            <span class="eco-metric-val warn">-18% vs pico</span>
+          </div>
+          <div class="eco-progress">
+            <div class="eco-prog-label"><span>Transición energética</span><span>40%</span></div>
+            <div class="eco-prog-bar">
+              <div class="eco-prog-fill green-fill" data-width="40"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     BETA UPDATE
+============================= -->
+<section id="beta" class="section">
+  <div class="container">
+    <div class="beta-inner reveal">
+      <div class="beta-badge">🧪 BETA UPDATE — EXPERIMENTAL 2026</div>
+      <h2 class="section-title" style="margin-top:10px">PRÓXIMAS ACTUALIZACIONES EN DESARROLLO</h2>
+      <div class="beta-grid">
+        <div class="beta-item">
+          <span class="beta-item-icon">🧬</span>
+          <div class="beta-item-title">REVERSIÓN DE ENVEJECIMIENTO</div>
+          <div class="beta-item-desc">Altos Labs y Unity Biotechnology reportan extensión de vida saludable en primates. Ensayos humanos fase 2 en 2027. El contador de vida del jugador podría reiniciarse.</div>
+          <span class="beta-item-tag">FASE 2 PENDIENTE</span>
+        </div>
+        <div class="beta-item">
+          <span class="beta-item-icon">🚀</span>
+          <div class="beta-item-title">COLONIA MARCIANA</div>
+          <div class="beta-item-desc">Starship completó 6 vuelos de prueba exitosos. Misión no tripulada a Marte en 2026. Tripulada estimada para 2028. Nuevo bioma desbloqueado pendiente de confirmación.</div>
+          <span class="beta-item-tag">ALPHA TESTING</span>
+        </div>
+        <div class="beta-item">
+          <span class="beta-item-icon">⚡</span>
+          <div class="beta-item-title">FUSIÓN NUCLEAR COMERCIAL</div>
+          <div class="beta-item-desc">Commonwealth Fusion Systems conecta primer reactor de fusión a la red en 2027. ITER en fase de plasma. La fuente de energía definitiva del servidor está a 3 años del lanzamiento.</div>
+          <span class="beta-item-tag">EN CONSTRUCCIÓN</span>
+        </div>
+        <div class="beta-item">
+          <span class="beta-item-icon">🧠</span>
+          <div class="beta-item-title">NEURALINK GEN 2</div>
+          <div class="beta-item-desc">150 pacientes con implantes activos. Control de computadoras con velocidad de 8× la escritura humana. Versión inalámbrica en desarrollo. Interfaz cerebro-máquina masiva en horizonte.</div>
+          <span class="beta-item-tag">PRUEBAS HUMANAS</span>
+        </div>
+      </div>
+      <div class="beta-progress-section">
+        <p class="beta-prog-title">// PROGRESO DE ACTUALIZACIONES GLOBALES 2026</p>
+        <div class="bprog-row">
+          <div class="bprog-label"><span>Transición energética global</span><span>40%</span></div>
+          <div class="bprog-bar"><div class="bprog-fill" data-width="40"></div></div>
+        </div>
+        <div class="bprog-row">
+          <div class="bprog-label"><span>Colonización espacial</span><span>14%</span></div>
+          <div class="bprog-bar"><div class="bprog-fill" data-width="14"></div></div>
+        </div>
+        <div class="bprog-row">
+          <div class="bprog-label"><span>Fusión nuclear comercial</span><span>71%</span></div>
+          <div class="bprog-bar"><div class="bprog-fill" data-width="71"></div></div>
+        </div>
+        <div class="bprog-row">
+          <div class="bprog-label"><span>Medicina de precisión con IA</span><span>64%</span></div>
+          <div class="bprog-bar"><div class="bprog-fill" data-width="64"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div><!-- /update-main -->
+
+<!-- ============================
+     UPDATE: HEAT v2 (Colapso Térmico 2026)
+============================= -->
+<div class="update-content" id="update-heat">
+  <div class="container">
+    <div class="back-bar">
+      <button class="btn-back" onclick="closeUpdate()">◀ VOLVER AL SELECTOR</button>
+    </div>
+    <div class="update-banner">
+      <div class="update-banner-inner">
+        <span class="update-banner-title">🔥 HEAT UPDATE v2 — COLAPSO TÉRMICO 2026</span>
+        <div class="update-banner-meta">
+          <span class="tag red">CRÍTICO</span>
+          <span class="tag yellow">HOTFIX</span>
+          <span class="version-badge">127 ALERTAS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO — HEAT v2 -->
+  <section class="section" style="min-height:100vh;display:flex;align-items:center;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(192,48,48,0.10) 0%,transparent 70%),var(--bg-main)">
+    <div class="container hero-content">
+      <p class="hero-eyebrow" style="color:var(--red)">// HOTFIX v2 — COLAPSO TÉRMICO CONFIRMADO</p>
+      <h1 class="hero-title" style="text-shadow:4px 4px 0 #801010,8px 8px 0 rgba(0,0,0,0.3)">🔥 HEAT UPDATE<br>v2 — 2026</h1>
+      <p class="hero-subtitle">
+        2025 fue el año más caliente en 125,000 años de historia del servidor.<br>
+        127 alertas climáticas activas. El umbral de +2°C a punto de ser permanente.<br>
+        Protocolo de emergencia planetaria activado. Respuesta insuficiente detectada.
+      </p>
+      <div class="hero-actions">
+        <a href="#heat-highlights" class="btn-primary" style="background:var(--red);border-color:#801010;box-shadow:4px 4px 0 #801010,6px 6px 0 rgba(0,0,0,0.4)">▶ VER ALERTAS</a>
+        <a href="#heat-eco" class="btn-secondary">⚠ ESTADO BIOMAS</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat-item"><span class="stat-number" style="color:#F08050">+1.97°C</span><span class="stat-label">Temp. media 2025</span></div>
+        <div class="hero-stat-item"><span class="stat-number" style="color:#F08050">127</span><span class="stat-label">Alertas activas</span></div>
+        <div class="hero-stat-item"><span class="stat-number" style="color:#F08050">×5.8</span><span class="stat-label">Incendios vs 1990</span></div>
+        <div class="hero-stat-item"><span class="stat-number" style="color:#F08050">58</span><span class="stat-label">Países en riesgo alto</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIGHLIGHTS — HEAT v2 -->
+  <section id="heat-highlights" class="section" style="background:var(--bg-card);border-top:3px solid #801010;border-bottom:3px solid #801010">
+    <div class="container">
+      <h2 class="section-title" style="color:#F08050">🔥 HEAT HIGHLIGHTS v2 — COLAPSO EN CURSO</h2>
+      <div class="highlights-grid">
+        <div class="highlight-card alert reveal">
+          <span class="hc-icon">🌡️</span>
+          <div class="hc-value">+1.97°C</div>
+          <div class="hc-label">2025: año más caliente en 125,000 años</div>
+          <div class="hc-desc">Copernicus confirma que 2025 superó el récord de 2023 y 2024. Por primera vez en la historia del servidor, el planeta estuvo sobre +2°C durante 14 días consecutivos en julio.</div>
+          <div class="hc-corner"><span class="tag red">RÉCORD ABSOLUTO</span></div>
+        </div>
+        <div class="highlight-card alert reveal">
+          <span class="hc-icon">🔥</span>
+          <div class="hc-value">×5.8</div>
+          <div class="hc-label">Temporada de incendios 2025</div>
+          <div class="hc-desc">Los incendios en California destruyeron 40,000 estructuras en Los Ángeles en enero 2025. El peor desastre en la historia del estado. Daños estimados: $250 billones. Bioma urbano depreciado.</div>
+          <div class="hc-corner"><span class="tag red">CRÍTICO</span></div>
+        </div>
+        <div class="highlight-card alert reveal">
+          <span class="hc-icon">🌀</span>
+          <div class="hc-value">Cat. 5+</div>
+          <div class="hc-label">Huracanes de nueva generación</div>
+          <div class="hc-desc">Helene y Milton (2024) causaron $250B en daños combinados. Milton se intensificó de Cat.1 a Cat.5 en 24 horas. El sistema de tormentas fue reclasificado: nueva categoría en debate.</div>
+          <div class="hc-corner"><span class="tag red">NERF BIOMA</span></div>
+        </div>
+        <div class="highlight-card warn reveal">
+          <span class="hc-icon">💧</span>
+          <div class="hc-value">-36%</div>
+          <div class="hc-label">Reservas de agua dulce accesible</div>
+          <div class="hc-desc">Acuíferos del norte de India, norte de África y suroeste de EE.UU. en colapso. 3.5 mil millones de jugadores en zonas con estrés hídrico severo. Mecánica de agua en modo escasez.</div>
+          <div class="hc-corner"><span class="tag yellow">AVISO</span></div>
+        </div>
+        <div class="highlight-card alert reveal">
+          <span class="hc-icon">🧊</span>
+          <div class="hc-value">-19%</div>
+          <div class="hc-label">Hielo ártico en mínimo registrado</div>
+          <div class="hc-desc">Septiembre 2025 registró el menor volumen de hielo marino ártico desde que existen registros satelitales. Ruta ártica noreste abierta 120 días al año. El bioma polar está siendo eliminado.</div>
+          <div class="hc-corner"><span class="tag red">ALERTA</span></div>
+        </div>
+        <div class="highlight-card warn reveal">
+          <span class="hc-icon">🌾</span>
+          <div class="hc-value">-22%</div>
+          <div class="hc-label">Rendimiento agrícola en zonas críticas</div>
+          <div class="hc-desc">India, Pakistan y el Sahel reportan caídas de cosecha del 22% por calor extremo e irregularidad en lluvias. La mecánica de alimentación global está bajo presión sin precedentes.</div>
+          <div class="hc-corner"><span class="tag yellow">NERF</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIMA PANEL — HEAT v2 -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">🌡️ SISTEMA TÉRMICO — DIAGNÓSTICO 2026</h2>
+      <div class="clima-panel reveal">
+        <div class="clima-header" style="background:#3a1010;border-bottom-color:var(--red)">
+          <h3>⚠ HEAT_ENGINE v2 — EMERGENCIA PLANETARIA ACTIVA</h3>
+          <div class="clima-dots"><div class="clima-dot red"></div><div class="clima-dot red"></div><div class="clima-dot red"></div></div>
+        </div>
+        <div class="clima-body">
+          <div class="clima-grid">
+            <div class="clima-stat"><div class="clima-stat-label">TEMP. MEDIA 2025</div><div class="clima-stat-value hot">+1.97°C</div><div class="clima-stat-change up">▲ Récord absoluto histórico</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">DÍAS >50°C EN 2025</div><div class="clima-stat-value hot">234 días globales</div><div class="clima-stat-change up">▲ +87% vs promedio</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">COSTO DESASTRES 2025</div><div class="clima-stat-value hot">$580B</div><div class="clima-stat-change up">▲ Récord económico</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">MUERTES CALOR 2025</div><div class="clima-stat-value warn">+220K est.</div><div class="clima-stat-change up">▲ Solo en Europa y Asia</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">GLACIARES ALPINOS</div><div class="clima-stat-value cold">-36%</div><div class="clima-stat-change down">▼ vs 1950. Irreversible.</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">CIUDADES >55°C</div><div class="clima-stat-value hot">23 ciudades</div><div class="clima-stat-change up">▲ vs 3 en 2010</div></div>
+          </div>
+          <div>
+            <div class="clima-bar-label">NIVEL DE AMENAZA TÉRMICA: Emergencia máxima</div>
+            <div class="clima-bar-wrap"><div class="clima-bar-fill red-bar" data-width="97"></div><span class="clima-bar-val">97%</span></div>
+            <div class="clima-bar-label">RIESGO HÍDRICO: Escasez crítica global</div>
+            <div class="clima-bar-wrap"><div class="clima-bar-fill red-bar" data-width="84"></div><span class="clima-bar-val">84%</span></div>
+            <div class="clima-bar-label">INTEGRIDAD DE GLACIARES: Volumen restante</div>
+            <div class="clima-bar-wrap"><div class="clima-bar-fill" data-width="36"></div><span class="clima-bar-val">36%</span></div>
+            <div class="clima-bar-label">CAPACIDAD DE RESPUESTA GLOBAL: Preparación real</div>
+            <div class="clima-bar-wrap"><div class="clima-bar-fill blue-bar" data-width="22"></div><span class="clima-bar-val">22%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOG — HEAT v2 -->
+  <section class="section" style="background:var(--bg-card);border-top:3px solid var(--border-col);border-bottom:3px solid var(--border-col)">
+    <div class="container">
+      <h2 class="section-title">🏛️ LOG DE EMERGENCIA TÉRMICA — EVENTOS REALES 2025–2026</h2>
+      <div class="console-wrap reveal">
+        <div class="console-top">
+          <span>HEAT_EMERGENCY_v2.log</span>
+          <span class="blink">█</span>
+          <span style="margin-left:auto">127 alertas activas</span>
+        </div>
+        <div class="console-body">
+          <div class="console-line visible"><span class="cl-time">[01:08:00]</span><span class="cl-tag error">INCENDIO</span><span class="cl-text"><strong>Los Ángeles, enero 2025:</strong> incendios Palisades y Eaton destruyen 40,000 estructuras. Daños: $250B. Peor desastre en la historia de California.</span></div>
+          <div class="console-line visible"><span class="cl-time">[03:22:14]</span><span class="cl-tag error">RÉCORD</span><span class="cl-text"><strong>Copernicus ECMWF confirma:</strong> 2025 es el año más caliente registrado en 125,000 años. Temperatura media global: +1.97°C sobre era preindustrial.</span></div>
+          <div class="console-line visible"><span class="cl-time">[06:44:33]</span><span class="cl-tag warn">AGUA</span><span class="cl-text"><strong>Lago Titicaca</strong> alcanza nivel más bajo en 100 años. Bolivia y Perú activan emergencia hídrica. 3 millones de personas sin acceso regular.</span></div>
+          <div class="console-line visible"><span class="cl-time">[09:15:00]</span><span class="cl-tag error">HURACÁN</span><span class="cl-text"><strong>Temporada atlántica 2025:</strong> 21 tormentas nombradas. 5 huracanes mayores. Daños totales superan $180B. Mecánica de intensificación rápida en máximos.</span></div>
+          <div class="console-line visible"><span class="cl-time">[11:30:48]</span><span class="cl-tag warn">BIOMA</span><span class="cl-text"><strong>Ártico sin hielo de verano:</strong> septiembre 2025 registró extensión mínima histórica. Ruta marítima del norte abierta 120 días. Osos polares sin hábitat reproducible.</span></div>
+          <div class="console-line visible"><span class="cl-time">[13:55:22]</span><span class="cl-tag ok">RESPUESTA</span><span class="cl-text"><strong>COP30 (Belém, Brasil):</strong> acuerdo de reducción de carbón al 80% para 2035. 134 naciones firman. Implementación: dudosa según analistas del servidor.</span></div>
+          <div class="console-line visible"><span class="cl-time">[16:10:07]</span><span class="cl-tag error">CORAL</span><span class="cl-text"><strong>Gran Barrera de Coral:</strong> cuarto blanqueamiento masivo en 9 años confirmado. 91% de arrecifes afectados. El bioma marino más diverso en proceso de eliminación permanente.</span></div>
+          <div class="console-line visible"><span class="cl-time">[19:40:30]</span><span class="cl-tag warn">METANO</span><span class="cl-text"><strong>Permafrost siberiano:</strong> liberación de metano 40% por encima de modelos. Bucle de retroalimentación climática acelerado. Los científicos actualizan proyecciones al alza.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ECOSISTEMA — HEAT v2 -->
+  <section id="heat-eco" class="section">
+    <div class="container">
+      <h2 class="section-title">🌿 ECOSISTEMA — DAÑOS DEL COLAPSO TÉRMICO v2</h2>
+      <div class="eco-grid">
+        <div class="eco-card reveal">
+          <div class="eco-header red-h"><span class="eco-icon">🪸</span><span class="eco-title">ARRECIFES DE CORAL</span><span class="eco-status critical">COLAPSO</span></div>
+          <div class="eco-body">
+            <div class="eco-metric"><span class="eco-metric-label">Blanqueamiento 2025</span><span class="eco-metric-val bad">91% global</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">Gran Barrera</span><span class="eco-metric-val bad">4° evento masivo</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">Temp. oceánica</span><span class="eco-metric-val bad">+1.3°C récord</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">Recuperación estimada</span><span class="eco-metric-val bad">Imposible sin -1°C</span></div>
+            <div class="eco-progress"><div class="eco-prog-label"><span>Corales funcionales</span><span>9%</span></div><div class="eco-prog-bar"><div class="eco-prog-fill red-fill" data-width="9"></div></div></div>
+          </div>
+        </div>
+        <div class="eco-card reveal">
+          <div class="eco-header red-h"><span class="eco-icon">🌲</span><span class="eco-title">BOSQUES GLOBALES</span><span class="eco-status critical">CRÍTICO</span></div>
+          <div class="eco-body">
+            <div class="eco-metric"><span class="eco-metric-label">Área quemada 2025</span><span class="eco-metric-val bad">22.7M ha</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">California perdida</span><span class="eco-metric-val bad">180,000 ha</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">Siberia afectada</span><span class="eco-metric-val bad">8.3M ha</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">CO₂ liberado por fuegos</span><span class="eco-metric-val bad">4.1 Gt</span></div>
+            <div class="eco-progress"><div class="eco-prog-label"><span>Cobertura forestal intacta</span><span>38%</span></div><div class="eco-prog-bar"><div class="eco-prog-fill red-fill" data-width="38"></div></div></div>
+          </div>
+        </div>
+        <div class="eco-card reveal">
+          <div class="eco-header yellow-h"><span class="eco-icon">🐧</span><span class="eco-title">FAUNA POLAR</span><span class="eco-status warning">CRÍTICO</span></div>
+          <div class="eco-body">
+            <div class="eco-metric"><span class="eco-metric-label">Pingüinos Antártida</span><span class="eco-metric-val bad">-38% colonias</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">Osos polares</span><span class="eco-metric-val bad">Vulnerable IUCN</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">Walrus del Ártico</span><span class="eco-metric-val warn">-24% población</span></div>
+            <div class="eco-metric"><span class="eco-metric-label">Migración forzada</span><span class="eco-metric-val warn">1,800+ spp.</span></div>
+            <div class="eco-progress"><div class="eco-prog-label"><span>Fauna polar estable</span><span>41%</span></div><div class="eco-prog-bar"><div class="eco-prog-fill yellow-fill" data-width="41"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- /update-heat -->
+
+<!-- ============================
+     UPDATE: TECH v2 (IA Agéntica 2026)
+============================= -->
+<div class="update-content" id="update-tech">
+  <div class="container">
+    <div class="back-bar">
+      <button class="btn-back" onclick="closeUpdate()">◀ VOLVER AL SELECTOR</button>
+    </div>
+    <div class="update-banner">
+      <div class="update-banner-inner">
+        <span class="update-banner-title">🤖 TECH UPDATE v2 — IA AGÉNTICA Y ROBÓTICA 2026</span>
+        <div class="update-banner-meta">
+          <span class="tag blue">EXPANSIÓN</span>
+          <span class="tag gold">NUEVO</span>
+          <span class="version-badge">18 MODS NUEVOS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO — TECH v2 -->
+  <section class="section" style="min-height:100vh;display:flex;align-items:center;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(74,191,216,0.08) 0%,transparent 70%),var(--bg-main)">
+    <div class="container hero-content">
+      <p class="hero-eyebrow" style="color:var(--cyan)">// EXPANSIÓN v2 — AGENTES IA OPERATIVOS SIN SUPERVISIÓN</p>
+      <h1 class="hero-title" style="text-shadow:4px 4px 0 #102030,8px 8px 0 rgba(0,0,0,0.3)">🤖 TECH UPDATE<br>v2 — 2026</h1>
+      <p class="hero-subtitle">
+        Agentes de IA ya toman decisiones y ejecutan tareas sin intervención humana.<br>
+        Robots humanoides en líneas de producción reales. Computación cuántica comercial llegó.<br>
+        18 nuevos módulos activos. El meta del servidor cambió para siempre.
+      </p>
+      <div class="hero-actions">
+        <a href="#tech-highlights" class="btn-primary" style="background:var(--cyan);color:#0A1A20;border-color:#1A4A5A;box-shadow:4px 4px 0 #1A4A5A,6px 6px 0 rgba(0,0,0,0.4)">▶ VER MÓDULOS</a>
+        <a href="#tech-beta" class="btn-secondary">🧪 EXPERIMENTAL</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat-item"><span class="stat-number" style="color:var(--cyan)">4.8B</span><span class="stat-label">Usuarios IA activos</span></div>
+        <div class="hero-stat-item"><span class="stat-number" style="color:var(--cyan)">18</span><span class="stat-label">Nuevos módulos</span></div>
+        <div class="hero-stat-item"><span class="stat-number" style="color:var(--cyan)">$1.1T</span><span class="stat-label">Inversión IA 2025</span></div>
+        <div class="hero-stat-item"><span class="stat-number" style="color:var(--cyan)">400M</span><span class="stat-label">Empleos en transición</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIGHLIGHTS — TECH v2 -->
+  <section id="tech-highlights" class="section" style="background:var(--bg-card);border-top:3px solid #1A4A5A;border-bottom:3px solid #1A4A5A">
+    <div class="container">
+      <h2 class="section-title" style="color:var(--cyan)">🤖 TECH HIGHLIGHTS v2 — MÓDULOS ACTIVOS 2026</h2>
+      <div class="highlights-grid">
+        <div class="highlight-card ok reveal">
+          <span class="hc-icon">🧠</span>
+          <div class="hc-value">Agentes IA</div>
+          <div class="hc-label">IA autónoma operativa en empresas reales</div>
+          <div class="hc-desc">Claude 4 Opus, GPT-5 y Gemini 2.0 Ultra operan como agentes autónomos en flujos de trabajo completos. Gestionan código, emails, análisis y decisiones sin revisión humana constante. El NPC tomó el control.</div>
+          <div class="hc-corner"><span class="tag gold">BUFF EXTREMO</span></div>
+        </div>
+        <div class="highlight-card ok reveal">
+          <span class="hc-icon">🦾</span>
+          <div class="hc-value">Humanoides</div>
+          <div class="hc-label">Robots en producción industrial real</div>
+          <div class="hc-desc">Figure 02, Tesla Optimus Gen 2 y Boston Dynamics Atlas operan en fábricas de BMW, Amazon y Foxconn. 85,000 unidades desplegadas globalmente en 2025. La mano de obra robótica ya es competitiva en precio.</div>
+          <div class="hc-corner"><span class="tag gold">NUEVO</span></div>
+        </div>
+        <div class="highlight-card info reveal">
+          <span class="hc-icon">⚛️</span>
+          <div class="hc-value">1M Qubits</div>
+          <div class="hc-label">Microsoft alcanza computación cuántica útil</div>
+          <div class="hc-desc">Microsoft anuncia chips topológicos de 1 millón de qubits lógicos. Google Willow resolvió en 5 minutos un problema que tomaría 10 septillones de años. La criptografía RSA tiene fecha de expiración.</div>
+          <div class="hc-corner"><span class="tag blue">TECH</span></div>
+        </div>
+        <div class="highlight-card ok reveal">
+          <span class="hc-icon">🧬</span>
+          <div class="hc-value">AlphaFold 3</div>
+          <div class="hc-label">IA diseña medicamentos desde cero</div>
+          <div class="hc-desc">AlphaFold 3 predice estructuras de proteínas con precisión de rayos X. Isomorphic Labs diseñó 6 candidatos a fármacos en 2025 que ya están en ensayos clínicos. La biología como software es realidad.</div>
+          <div class="hc-corner"><span class="tag">MEJORA</span></div>
+        </div>
+        <div class="highlight-card warn reveal">
+          <span class="hc-icon">🔐</span>
+          <div class="hc-value">Deepfake</div>
+          <div class="hc-label">Crisis de autenticidad digital global</div>
+          <div class="hc-desc">Deepfakes de audio y video ahora son indetectables por humanos en el 94% de pruebas. Fraudes por voice cloning superan $2.8B en 2025. Tres líderes políticos suplantados en actos públicos.</div>
+          <div class="hc-corner"><span class="tag yellow">NERF SOCIEDAD</span></div>
+        </div>
+        <div class="highlight-card ok reveal">
+          <span class="hc-icon">🔋</span>
+          <div class="hc-value">Estado Sólido</div>
+          <div class="hc-label">Baterías de nueva generación en producción</div>
+          <div class="hc-desc">Toyota y QuantumScape inician producción piloto de baterías de estado sólido. Densidad energética 2.4× superior al litio. Carga al 80% en 10 minutos. El bioma del transporte eléctrico recibe mega-buff.</div>
+          <div class="hc-corner"><span class="tag">PATCH</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIMA PANEL — TECH v2 -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">📊 TECH METRICS v2 — STATS DEL MÓDULO IA 2026</h2>
+      <div class="clima-panel reveal">
+        <div class="clima-header" style="background:#0A1A2A;border-bottom-color:var(--cyan)">
+          <h3>⚙ AI_ENGINE v2026 — MÉTRICAS GLOBALES ACTUALIZADAS</h3>
+          <div class="clima-dots"><div class="clima-dot" style="background:var(--cyan);border-color:#1A4A5A"></div><div class="clima-dot" style="background:var(--cyan);border-color:#1A4A5A"></div><div class="clima-dot green"></div></div>
+        </div>
+        <div class="clima-body">
+          <div class="clima-grid">
+            <div class="clima-stat"><div class="clima-stat-label">USUARIOS IA ACTIVOS</div><div class="clima-stat-value" style="color:var(--cyan)">4.8B</div><div class="clima-stat-change down" style="color:var(--cyan)">▲ +129% vs 2024</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">INVERSIÓN GLOBAL IA 2025</div><div class="clima-stat-value" style="color:var(--cyan)">$1.1T</div><div class="clima-stat-change down" style="color:var(--cyan)">▲ Récord absoluto</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">EMPLEOS EN TRANSICIÓN</div><div class="clima-stat-value warn">400M</div><div class="clima-stat-change up">▲ McKinsey 2026</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">ROBOTS HUMANOIDES ACTIVOS</div><div class="clima-stat-value" style="color:var(--cyan)">85,000</div><div class="clima-stat-change down" style="color:var(--cyan)">▲ +780% vs 2023</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">PAÍSES CON REGULACIÓN IA</div><div class="clima-stat-value warn">52%</div><div class="clima-stat-change up">▲ EU AI Act activo</div></div>
+            <div class="clima-stat"><div class="clima-stat-label">ENERGÍA DATA CENTERS IA</div><div class="clima-stat-value hot">620 TWh</div><div class="clima-stat-change up">▲ +34% vs 2024</div></div>
+          </div>
+          <div>
+            <div class="clima-bar-label">ADOPCIÓN IA EMPRESARIAL: Penetración Fortune 500</div>
+            <div class="clima-bar-wrap"><div class="clima-bar-fill" data-width="89" style="background:linear-gradient(90deg,#1A4A5A,var(--cyan))"></div><span class="clima-bar-val">89%</span></div>
+            <div class="clima-bar-label">REGULACIÓN GUBERNAMENTAL: Cobertura legal real</div>
+            <div class="clima-bar-wrap"><div class="clima-bar-fill" data-width="52"></div><span class="clima-bar-val">52%</span></div>
+            <div class="clima-bar-label">DESEMPLEO TECNOLÓGICO: Empleos en riesgo inminente</div>
+            <div class="clima-bar-wrap"><div class="clima-bar-fill red-bar" data-width="63"></div><span class="clima-bar-val">63%</span></div>
+            <div class="clima-bar-label">CONFIANZA PÚBLICA EN IA: Índice global promedio</div>
+            <div class="clima-bar-wrap"><div class="clima-bar-fill blue-bar" data-width="34"></div><span class="clima-bar-val">34%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOG — TECH v2 -->
+  <section class="section" style="background:var(--bg-card);border-top:3px solid var(--border-col);border-bottom:3px solid var(--border-col)">
+    <div class="container">
+      <h2 class="section-title">🏛️ LOG TECH v2 — EVENTOS TECNOLÓGICOS 2025–2026</h2>
+      <div class="console-wrap reveal">
+        <div class="console-top">
+          <span>TECH_UPDATE_v2.log</span>
+          <span class="blink">█</span>
+          <span style="margin-left:auto">18 mods activos</span>
+        </div>
+        <div class="console-body">
+          <div class="console-line visible"><span class="cl-time">[01:30:00]</span><span class="cl-tag ok">LANZAMIENTO</span><span class="cl-text"><strong>Claude 4 Opus y Sonnet, GPT-5, Gemini 2.0 Ultra</strong> — agentes autónomos en producción. Primer mes: 200M tareas ejecutadas sin supervisión humana.</span></div>
+          <div class="console-line visible"><span class="cl-time">[03:15:22]</span><span class="cl-tag ok">ROBÓTICA</span><span class="cl-text"><strong>Figure 02 y Tesla Optimus Gen 2</strong> en líneas de BMW y Amazon. Rendimiento equivalente a empleado humano en 73% de tareas manuales. Escalada rápida.</span></div>
+          <div class="console-line visible"><span class="cl-time">[06:00:08]</span><span class="cl-tag info">CUÁNTICO</span><span class="cl-text"><strong>Google Willow</strong> resuelve en 5 minutos un cálculo que tomaría 10 septillones de años. Microsoft anuncia chip topológico. Era post-clásica computacional activa.</span></div>
+          <div class="console-line visible"><span class="cl-time">[08:45:33]</span><span class="cl-tag warn">LABORAL</span><span class="cl-text"><strong>400 millones de empleos</strong> en transición según McKinsey 2026. Profesiones como contabilidad básica, atención al cliente y análisis de datos en proceso de automatización masiva.</span></div>
+          <div class="console-line visible"><span class="cl-time">[11:20:00]</span><span class="cl-tag ok">MEDICINA</span><span class="cl-text"><strong>AlphaFold 3 + Isomorphic Labs:</strong> 6 candidatos a fármacos diseñados por IA entran a ensayos clínicos en 2025. Tiempo de diseño: semanas vs 5 años tradicionales.</span></div>
+          <div class="console-line visible"><span class="cl-time">[13:55:11]</span><span class="cl-tag error">DEEPFAKE</span><span class="cl-text"><strong>Crisis deepfake 2025:</strong> voz del CEO de Ferrari clonada para fraude de €830K. Tres parlamentos europeos debaten ley de autenticidad digital urgente.</span></div>
+          <div class="console-line visible"><span class="cl-time">[16:30:44]</span><span class="cl-tag info">REGULACIÓN</span><span class="cl-text"><strong>EU AI Act</strong> entra en vigor agosto 2025. Primeras multas emitidas a Meta y TikTok por sistemas de recomendación de alto riesgo. €150M en sanciones Q4 2025.</span></div>
+          <div class="console-line visible"><span class="cl-time">[20:10:00]</span><span class="cl-tag warn">ENERGÍA</span><span class="cl-text"><strong>Data centers IA consumen 620 TWh anuales</strong> — 4% de electricidad global. Microsoft, Google y Amazon construyen 14 reactores nucleares privados para alimentar sus servidores de IA.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BETA SECTION — TECH v2 -->
+  <section id="tech-beta" class="section" style="background:repeating-linear-gradient(45deg,rgba(74,191,216,0.02) 0px,rgba(74,191,216,0.02) 2px,transparent 2px,transparent 12px),var(--bg-card);border-top:3px solid var(--cyan);border-bottom:3px solid var(--cyan)">
+    <div class="container">
+      <div class="beta-inner reveal" style="border-color:var(--cyan)">
+        <div class="beta-badge" style="background:var(--cyan);color:#0A1A20">🧪 TECH BETA v2 — MÓDULOS EN DESARROLLO 2026–2027</div>
+        <h2 class="section-title" style="margin-top:10px;color:var(--cyan)">PRÓXIMOS MÓDULOS TECNOLÓGICOS EN PIPELINE</h2>
+        <div class="beta-grid">
+          <div class="beta-item" style="border-color:#1A4A5A">
+            <span class="beta-item-icon">🧠</span>
+            <div class="beta-item-title" style="color:var(--cyan)">AGI DEFINITIVA</div>
+            <div class="beta-item-desc">Múltiples labs compiten. OpenAI, Anthropic y DeepMind en "sprint final". Debate interno sobre si ya existe AGI o falta un último salto. ETA: 2027 según insiders.</div>
+            <span class="beta-item-tag" style="border-color:#1A4A5A;color:var(--cyan)">SPRINT FINAL</span>
+          </div>
+          <div class="beta-item" style="border-color:#1A4A5A">
+            <span class="beta-item-icon">🌐</span>
+            <div class="beta-item-title" style="color:var(--cyan)">INTERNET NEURONAL</div>
+            <div class="beta-item-desc">Neuralink Gen 2 inalámbrico en desarrollo. Transmisión de pensamiento a texto a 120 palabras/min. La interfaz cerebro-internet podría llegar al consumidor en 2028.</div>
+            <span class="beta-item-tag" style="border-color:#1A4A5A;color:var(--cyan)">PRUEBAS HUMANAS</span>
+          </div>
+          <div class="beta-item" style="border-color:#1A4A5A">
+            <span class="beta-item-icon">⚡</span>
+            <div class="beta-item-title" style="color:var(--cyan)">FUSIÓN COMERCIAL</div>
+            <div class="beta-item-desc">Commonwealth Fusion Systems conecta SPARC a la red en 2027. TAE Technologies y Helion en paralelo. El servidor podría tener energía ilimitada limpia antes de 2030.</div>
+            <span class="beta-item-tag" style="border-color:#1A4A5A;color:var(--cyan)">CONSTRUCCIÓN ACTIVA</span>
+          </div>
+          <div class="beta-item" style="border-color:#1A4A5A">
+            <span class="beta-item-icon">🧬</span>
+            <div class="beta-item-title" style="color:var(--cyan)">REPROGRAMACIÓN CELULAR</div>
+            <div class="beta-item-desc">Altos Labs logró rejuvenecimiento de 50 años en ratones. Ensayos humanos en 2027. Si funciona, el contador de vida del jugador podría reiniciarse. Debate ético máximo activado.</div>
+            <span class="beta-item-tag" style="border-color:#1A4A5A;color:var(--cyan)">FASE 1 HUMANA 2027</span>
+          </div>
+        </div>
+        <div class="beta-progress-section">
+          <p class="beta-prog-title" style="color:var(--cyan)">// PROGRESO DE MÓDULOS TECH 2026</p>
+          <div class="bprog-row"><div class="bprog-label"><span>AGI (razonamiento autónomo general)</span><span>84%</span></div><div class="bprog-bar" style="border-color:#1A4A5A"><div class="bprog-fill" data-width="84" style="background:linear-gradient(90deg,#1A4A5A,var(--cyan),#A0EFF8)"></div></div></div>
+          <div class="bprog-row"><div class="bprog-label"><span>Computación cuántica comercial</span><span>67%</span></div><div class="bprog-bar" style="border-color:#1A4A5A"><div class="bprog-fill" data-width="67" style="background:linear-gradient(90deg,#1A4A5A,var(--cyan),#A0EFF8)"></div></div></div>
+          <div class="bprog-row"><div class="bprog-label"><span>Fusión nuclear comercial (red eléctrica)</span><span>71%</span></div><div class="bprog-bar" style="border-color:#1A4A5A"><div class="bprog-fill" data-width="71" style="background:linear-gradient(90deg,#1A4A5A,var(--cyan),#A0EFF8)"></div></div></div>
+          <div class="bprog-row"><div class="bprog-label"><span>Robots humanoides en hogares</span><span>28%</span></div><div class="bprog-bar" style="border-color:#1A4A5A"><div class="bprog-fill" data-width="28" style="background:linear-gradient(90deg,#1A4A5A,var(--cyan),#A0EFF8)"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- /update-tech -->
+
+<!-- ============================
+     FOOTER
+============================= -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="footer-logo">🌍 EARTH UPDATE</span>
+        <span class="footer-tagline">El mundo real, como patch notes.<br>v2026.04 — Última actualización: hoy.</span>
+      </div>
+      <div class="footer-links-group">
+        <div class="footer-links-title">SECCIONES</div>
+        <ul class="footer-links">
+          <li><a href="#highlights">World Highlights</a></li>
+          <li><a href="#clima">Clima</a></li>
+          <li><a href="#politica">Política</a></li>
+          <li><a href="#musica">Música</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-group">
+        <div class="footer-links-title">MÁS</div>
+        <ul class="footer-links">
+          <li><a href="#tendencias">Tendencias</a></li>
+          <li><a href="#ecosistema">Ecosistema</a></li>
+          <li><a href="#beta">Beta Update</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Earth Update Project — Hecho con <span class="footer-heart">♥</span> y bloques de tierra</span>
+      <span class="footer-version">BUILD #2026.04.18 — STABLE</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================
+     JAVASCRIPT
+============================= -->
+<script>
+  /* ============================
+     DATA — ACTUALIZADO 2026
+  ============================ */
+  const CONSOLE_EVENTS = [
+    { time: "01:12:00", tag: "error", tagLabel: "GUERRA",     text: "<strong>Ucrania año 3:</strong> OTAN aprueba misiles de largo alcance. Rusia activa nuevas mecánicas de ataque en infraestructura energética europea." },
+    { time: "03:44:18", tag: "error", tagLabel: "CONFLICTO",  text: "<strong>Gaza:</strong> más de 46,000 bajas registradas. Negociaciones de tregua colapsaron en marzo 2026. Corredor humanitario bloqueado." },
+    { time: "06:20:10", tag: "warn",  tagLabel: "ECONOMÍA",   text: "<strong>Aranceles EE.UU. 2026:</strong> Trump activa tarifas del 60% a China y 25% a aliados. Mecánica de guerra comercial en máximo histórico." },
+    { time: "08:05:33", tag: "ok",    tagLabel: "TECH",       text: "<strong>Claude 4, GPT-5 y Gemini 2.0</strong> en producción. Agentes de IA ya gestionan empresas completas sin supervisión humana directa." },
+    { time: "09:30:47", tag: "info",  tagLabel: "ESPACIO",    text: "<strong>Starship vuelo 8</strong> exitoso. Cohete atrapado por brazos mecánicos por segunda vez. Misión Marte confirmada para ventana 2026–2027." },
+    { time: "10:55:22", tag: "warn",  tagLabel: "MIGRACIÓN",  text: "<strong>117 millones de desplazados</strong> en el mundo. Nuevo récord. Clima, conflictos y hambre activan mecánica de migración masiva global." },
+    { time: "12:18:05", tag: "ok",    tagLabel: "SALUD",      text: "<strong>Dengue y mpox</strong> bajo control en América Latina tras campaña de vacunación IA-asistida. Biomecánica viral estabilizada." },
+    { time: "14:02:39", tag: "error", tagLabel: "DEUDA",      text: "<strong>Deuda EE.UU. supera $36 billones.</strong> Techo de deuda suspendido por ley. El boss final económico del servidor sigue sin ser derrotado." },
+    { time: "15:44:11", tag: "info",  tagLabel: "GEOPOLÍTICA",text: "<strong>BRICS expandido a 9 miembros.</strong> Arabia Saudita confirma adhesión. El multipolar world server está rediseñando el mapa de alianzas." },
+    { time: "17:30:08", tag: "warn",  tagLabel: "ALIMENTOS",  text: "<strong>Precio del cacao +300%.</strong> El inventario de chocolate en crisis global por sequías en Ghana y Côte d'Ivoire. Escasez de recursos raros activa." },
+    { time: "19:10:44", tag: "ok",    tagLabel: "CIENCIA",    text: "<strong>Primer mapa completo del cerebro humano</strong> publicado en Nature. 86 mil millones de neuronas cartografiadas. Achievement histórico desbloqueado." },
+    { time: "21:05:30", tag: "error", tagLabel: "CIBERSEG",   text: "<strong>Salt Typhoon (China)</strong> infiltra sistemas de telecom de EE.UU., UK y Canadá. Ataque más sofisticado de la historia del servidor." },
+  ];
+
+  const MUSIC_DATA = [
+    { rank: 1,  emoji: "💀", title: "DROP DEAD", artist: "Olivia Rodrigo", streams: "10.7M reprod.", trend: "up",   trendIcon: "▲" },
+    { rank: 2,  emoji: "🎵", title: "BEAUTY AND A BEAT", artist: "Justin Bieber, Nicki Minaj", streams: "10.0M reprod.", trend: "up",  trendIcon: "▲" },
+    { rank: 3,  emoji: "🌊", title: "SWIM", artist: "BTS", streams: "6.8M reprod.", trend: "down", trendIcon: "▼" },
+    { rank: 4,  emoji: "🪆", title: "BABYDOLL", artist: "Dominic Fike", streams: "6.4M reprod.", trend: "down",  trendIcon: "▼" },
+    { rank: 5,  emoji: "👶", title: "BABY", artist: "Justin Bieber ft. Ludacris", streams: "4.7M reprod.", trend: "up",   trendIcon: "▲" },
+    { rank: 6,  emoji: "🌼", title: "DAISIES", artist: "Justin Bieber", streams: "4.7M reprod.", trend: "down", trendIcon: "▼" },
+    { rank: 7,  emoji: "🎲", title: "RISK IT ALL", artist: "Bruno Mars", streams: "4.3M reprod.", trend: "up",   trendIcon: "▲" },
+    { rank: 8,  emoji: "🩷", title: "STATESIDE", artist: "PinkPantheress ft. Zara Larsson", streams: "4.2M reprod.", trend: "new", trendIcon: "★ NEW" },
+    { rank: 9,  emoji: "😎", title: "CONFIDENT", artist: "Justin Bieber ft. Chance the Rapper", streams: "4.2M reprod.", trend: "down", trendIcon: "▼" },
+    { rank: 10, emoji: "🙏", title: "SORRY", artist: "Justin Bieber", streams: "4.2M reprod.", trend: "up",   trendIcon: "▲" },
+  ];
+
+  const TRENDS_DATA = [
+    { pct: "+890%", name: "Agentes de IA autónomos (Agentic AI)", category: "TECNOLOGÍA", icon: "🤖", color: "cyan", w: 95 },
+    { pct: "+540%", name: "Energía solar residencial global", category: "ENERGÍA", icon: "☀️", color: "yellow", w: 88 },
+    { pct: "+380%", name: "Demanda de cobre para infraestructura IA", category: "COMMODITIES", icon: "🔩", color: "yellow", w: 78 },
+    { pct: "+260%", name: "Robótica humanoide en manufactura", category: "ROBÓTICA", icon: "🦾", color: "cyan", w: 65 },
+    { pct: "+210%", name: "Turismo espacial suborbital", category: "AEROESPACIAL", icon: "🚀", color: "green", w: 58 },
+    { pct: "+180%", name: "Medicamentos GLP-1 (Ozempic, Wegovy)", category: "SALUD", icon: "💊", color: "green", w: 52 },
+    { pct: "-62%",  name: "Ventas de vehículos de combustión nueva", category: "AUTOMOTRIZ", icon: "🚗", color: "red", w: 62 },
+    { pct: "-44%",  name: "Empleos de atención al cliente tradicional", category: "LABORAL", icon: "📞", color: "red", w: 44 },
+  ];
+
+  /* ============================
+     UPDATE SELECTOR NAVIGATION
+  ============================ */
+  function openUpdate(id) {
+    // Hide selector
+    document.getElementById('update-selector').classList.add('hidden');
+
+    // Hide all update-content
+    document.querySelectorAll('.update-content').forEach(el => {
+      el.classList.remove('active', 'fade-in');
+    });
+
+    // Show the requested one
+    const target = document.getElementById(id);
+    if (target) {
+      target.classList.add('active');
+      // Trigger fade-in on next frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => target.classList.add('fade-in'));
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Re-run animations for newly visible content
+      setTimeout(() => {
+        initRevealForContainer(target);
+        initBarsForContainer(target);
+        initConsoleForContainer(target);
+      }, 100);
+    }
+  }
+
+  function closeUpdate() {
+    // Hide all updates
+    document.querySelectorAll('.update-content').forEach(el => {
+      el.classList.remove('active', 'fade-in');
+    });
+    // Show selector
+    const sel = document.getElementById('update-selector');
+    sel.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast("Volviendo al selector de updates.", 200);
+  }
+
+  /* ============================
+     INIT
+  ============================ */
+  document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    initNavbar();
+    initHeroBg();
+    renderConsole();
+    renderMusic();
+    renderTrends();
+    // Init scroll animations only for selector (visible by default)
+    initRevealForContainer(document.getElementById('update-selector'));
+    showToast("Patch notes v2026 cargados. Selecciona una update.", 1500);
+  });
+
+  /* ============================
+     THEME TOGGLE
+  ============================ */
+  function initTheme() {
+    const btn = document.getElementById("dark-toggle");
+    const body = document.body;
+    let dark = true;
+    body.dataset.theme = "dark";
+    btn.addEventListener("click", () => {
+      dark = !dark;
+      body.dataset.theme = dark ? "dark" : "light";
+      btn.textContent = dark ? "🌙" : "☀️";
+    });
+  }
+
+  /* ============================
+     NAVBAR
+  ============================ */
+  function initNavbar() {
+    const nav = document.getElementById("navbar");
+    const ham = document.getElementById("hamburger");
+    const links = document.getElementById("nav-links");
+
+    window.addEventListener("scroll", () => {
+      nav.classList.toggle("scrolled", window.scrollY > 60);
+    });
+
+    ham.addEventListener("click", () => {
+      ham.classList.toggle("open");
+      links.classList.toggle("open");
+    });
+
+    links.querySelectorAll("a").forEach(a => {
+      a.addEventListener("click", () => {
+        ham.classList.remove("open");
+        links.classList.remove("open");
+      });
+    });
+  }
+
+  /* ============================
+     HERO / SELECTOR FLOATING BLOCKS
+  ============================ */
+  function initHeroBg() {
+    ['hero-bg', 'selector-bg'].forEach(id => {
+      const container = document.getElementById(id);
+      if (!container) return;
+      for (let i = 0; i < 24; i++) {
+        const b = document.createElement("div");
+        b.className = "hero-block";
+        const size = [8, 12, 16, 24][Math.floor(Math.random() * 4)];
+        b.style.cssText = `
+          left: ${Math.random() * 100}%;
+          width: ${size}px; height: ${size}px;
+          animation-duration: ${8 + Math.random() * 16}s;
+          animation-delay: ${-Math.random() * 20}s;
+          opacity: ${0.04 + Math.random() * 0.1};
+        `;
+        container.appendChild(b);
+      }
+    });
+  }
+
+  /* ============================
+     CONSOLE EVENTS (update-main)
+  ============================ */
+  function renderConsole() {
+    const body = document.getElementById("console-body");
+    if (!body) return;
+    CONSOLE_EVENTS.forEach((ev, i) => {
+      const line = document.createElement("div");
+      line.className = "console-line";
+      line.innerHTML = `
+        <span class="cl-time">[${ev.time}]</span>
+        <span class="cl-tag ${ev.tag}">${ev.tagLabel}</span>
+        <span class="cl-text">${ev.text}</span>
+      `;
+      line.style.transitionDelay = `${i * 60}ms`;
+      body.appendChild(line);
+    });
+  }
+
+  // Animate a console body when it enters the viewport
+  function initConsoleForContainer(container) {
+    const bodies = container.querySelectorAll('.console-body');
+    bodies.forEach(body => {
+      const lines = body.querySelectorAll('.console-line');
+      if (lines.length === 0) return;
+      // If already visible (heat/tech have static lines), animate them
+      const alreadyVisible = Array.from(lines).some(l => l.classList.contains('visible'));
+      if (alreadyVisible) return;
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            lines.forEach((l, i) => {
+              setTimeout(() => l.classList.add("visible"), i * 70);
+            });
+            obs.disconnect();
+          }
+        });
+      }, { threshold: 0.2 });
+      obs.observe(body);
+    });
+  }
+
+  /* ============================
+     MUSIC RANKING
+  ============================ */
+  function renderMusic() {
+    const list = document.getElementById("music-list");
+    if (!list) return;
+    MUSIC_DATA.forEach(item => {
+      const el = document.createElement("div");
+      el.className = "music-item reveal";
+      const isTop = item.rank <= 3;
+      el.innerHTML = `
+        <span class="music-rank ${isTop ? 'top' : ''}">#${item.rank}</span>
+        <div class="music-art">${item.emoji}</div>
+        <div class="music-info">
+          <div class="music-title">${item.title}</div>
+          <div class="music-artist">${item.artist}</div>
+        </div>
+        <div class="music-right">
+          <span class="music-streams">${item.streams}</span>
+          <span class="music-trend ${item.trend}">${item.trendIcon}</span>
+        </div>
+        <div class="music-bar"></div>
+      `;
+      list.appendChild(el);
+    });
+  }
+
+  /* ============================
+     TRENDS
+  ============================ */
+  function renderTrends() {
+    const grid = document.getElementById("trends-grid");
+    if (!grid) return;
+    TRENDS_DATA.forEach(t => {
+      const card = document.createElement("div");
+      card.className = "trend-card reveal";
+      card.innerHTML = `
+        <div class="trend-icon">${t.icon}</div>
+        <div class="trend-pct ${t.color}">${t.pct}</div>
+        <div class="trend-name">${t.name}</div>
+        <div class="trend-category">${t.category}</div>
+        <div class="trend-spark"><div class="trend-spark-fill" data-width="${t.w}"></div></div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  /* ============================
+     REVEAL ANIMATIONS (per container)
+  ============================ */
+  function initRevealForContainer(container) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          entry.target.querySelectorAll("[data-width]").forEach(bar => {
+            setTimeout(() => { bar.style.width = bar.dataset.width + "%"; }, 200);
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+
+    container.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+  }
+
+  function initBarsForContainer(container) {
+    const climaObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll("[data-width]").forEach(bar => {
+            setTimeout(() => { bar.style.width = bar.dataset.width + "%"; }, 300);
+          });
+          climaObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    container.querySelectorAll(".clima-panel, .beta-inner").forEach(el => climaObs.observe(el));
+
+    // Also trigger console animation
+    initConsoleForContainer(container);
+  }
+
+  /* ============================
+     TOAST
+  ============================ */
+  function showToast(message, delay = 1000) {
+    const toast = document.getElementById("toast");
+    toast.querySelector(".toast-body").textContent = message;
+    setTimeout(() => {
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3500);
+    }, delay);
+  }
+</script>
+</body>
+</html>
